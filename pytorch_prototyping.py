@@ -56,7 +56,7 @@ class UpBlock3D(nn.Module):
         if norm is not None:
             self.net += [norm(out_channels, affine=True)]
 
-        self.net += [nn.ReLU(True)]
+        self.net += [nn.LeakyReLU(0.2, True)]
         self.net = nn.Sequential(*self.net)
 
     def forward(self, x, skipped=None):
@@ -68,7 +68,7 @@ class UpBlock3D(nn.Module):
 
 
 class Conv3dSame(torch.nn.Module):
-    '''3D convolution that pads to keep spatial dimensions equal. 
+    '''3D convolution that pads to keep spatial dimensions equal.
     Cannot deal with stride. Only quadratic kernels (=scalar kernel_size).
     '''
 
@@ -93,7 +93,7 @@ class Conv3dSame(torch.nn.Module):
 
 
 class Conv2dSame(torch.nn.Module):
-    '''2D convolution that pads to keep spatial dimensions equal. 
+    '''2D convolution that pads to keep spatial dimensions equal.
     Cannot deal with stride. Only quadratic kernels (=scalar kernel_size).
     '''
 
@@ -140,7 +140,7 @@ class UpBlock(nn.Module):
         :param use_dropout: bool. Whether to use dropout or not.
         :param dropout_prob: Float. The dropout probability (if use_dropout is True)
         :param norm: Which norm to use. If None, no norm is used. Default is Batchnorm with affinity.
-        :param upsampling_mode: Which upsampling mode: 
+        :param upsampling_mode: Which upsampling mode:
                 transpose: Upsampling with stride-2, kernel size 4 transpose convolutions.
                 bilinear: Feature map is upsampled with bilinear upsampling, then a conv layer.
                 nearest: Feature map is upsampled with nearest neighbor upsampling, then a conv layer.
@@ -176,7 +176,7 @@ class UpBlock(nn.Module):
         if norm is not None:
             net += [norm(out_channels, affine=True)]
 
-        net += [nn.ReLU(True)]
+        net += [nn.LeakyReLU(0.2, True)]
 
         if use_dropout:
             net += [nn.Dropout2d(dropout_prob, False)]
@@ -190,7 +190,7 @@ class UpBlock(nn.Module):
             if norm is not None:
                 net += [norm(out_channels, affine=True)]
 
-            net += [nn.ReLU(True)]
+            net += [nn.LeakyReLU(0.2, True)]
 
             if use_dropout:
                 net += [nn.Dropout2d(0.1, False)]
@@ -324,7 +324,7 @@ class Unet3d(nn.Module):
 
         if not outermost_linear:
             self.out_layer += [norm(out_channels, affine=True),
-                               nn.ReLU(True)]
+                               nn.LeakyReLU(0.2, True)]
         self.out_layer = nn.Sequential(*self.out_layer)
 
     def forward(self, x):
@@ -459,7 +459,7 @@ class Unet(nn.Module):
         if not outermost_linear:
             if norm is not None:
                 self.out_layer += [norm(out_channels, affine=True)]
-            self.out_layer += [nn.ReLU(True)]
+            self.out_layer += [nn.LeakyReLU(0.2, True)]
 
             if use_dropout:
                 self.out_layer += [nn.Dropout2d(dropout_prob)]
@@ -501,7 +501,7 @@ class DownsamplingNet(nn.Module):
         :param in_channels: Number of input channels.
         :param use_dropout: Whether or not to use dropout.
         :param dropout_prob: Dropout probability.
-        :param last_layer_one: Whether the output of the last layer will have a spatial size of 1. In that case, 
+        :param last_layer_one: Whether the output of the last layer will have a spatial size of 1. In that case,
                                the last layer will not have batchnorm, else, it will.
         :param norm: Which norm to use. Defaults to BatchNorm.
         '''
@@ -546,7 +546,7 @@ class UpsamplingNet(nn.Module):
         :param upsampling_mode: Mode of upsampling. For documentation, see class "UpBlock"
         :param use_dropout: Whether or not to use dropout.
         :param dropout_prob: Dropout probability.
-        :param first_layer_one: Whether the input to the last layer will have a spatial size of 1. In that case, 
+        :param first_layer_one: Whether the input to the last layer will have a spatial size of 1. In that case,
                                the first layer will not have a norm, else, it will.
         :param norm: Which norm to use. Defaults to BatchNorm.
         '''
